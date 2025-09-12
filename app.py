@@ -109,7 +109,7 @@ def train_models(df_train):
 
 
 # --- Main Data and Model Preparation ---
-file_path = 'Churn_Modelling.csv'
+file_path = 'dataset/Churn_Modelling.csv'
 df_processed, continuous_vars = preprocess_data(file_path)
 
 # Split the data into train and test sets
@@ -168,10 +168,10 @@ header = dbc.Navbar(
                 [
                     html.Span("🏦", className="me-2"),
                     dbc.NavbarBrand("Preventing Bank Customer Churn",
-                                    class_name="fw-bold", style={"color": "black"}),
+                                    class_name="fw-bold text-wrap", style={"color": "black"}),
                 ], className="d-flex align-items-center"
             ),
-            dbc.Badge("Interactive Dashboard", color="primary", className="ms-auto")
+            dbc.Badge("Dashboard", color="primary", className="ms-auto")
         ]
     ),
     color="light",
