@@ -4,6 +4,7 @@ import plotly.graph_objects as go
 import plotly.figure_factory as ff
 from dash import Dash, dcc, html, Input, Output
 import dash_bootstrap_components as dbc
+import dash_table # Import dash_table for displaying data
 from sklearn.preprocessing import PolynomialFeatures, MinMaxScaler
 from sklearn.metrics import (
     accuracy_score,
@@ -110,6 +111,7 @@ def train_models(df_train):
 
 # --- Main Data and Model Preparation ---
 file_path = 'dataset/Churn_Modelling.csv'
+df_raw = pd.read_csv(file_path, delimiter=',')
 df_processed, continuous_vars = preprocess_data(file_path)
 
 # Split the data into train and test sets
@@ -235,6 +237,34 @@ prepare_tab = html.Div(
                 ),
             ]
         ),
+        html.H5("Dataset Sample (First 10 Rows)"),
+        dash_table.DataTable(
+            id='table',
+            columns=[
+                {"name": i, "id": i, "type": "text"} if i in ['Geography', 'Gender'] 
+                else {"name": i, "id": i, "type": "numeric"}
+                for i in df_raw.drop(columns=["RowNumber", "CustomerId", "Surname"]).columns
+            ],
+            data=df_raw.drop(columns=["RowNumber", "CustomerId", "Surname"]).head(10).to_dict('records'),
+            sort_action="native",
+            filter_action="native",
+            page_action="none",
+            style_table={'overflowX': 'auto', 'width': '100%'},
+            style_header={
+                'backgroundColor': 'rgb(230, 230, 230)',
+                'fontWeight': 'bold',
+                'textAlign': 'center',
+            },
+            style_cell={
+                'textAlign': 'left',
+                'padding': '5px',
+                'font-size': '12px',
+                'minWidth': '80px', 'width': 'auto', 'maxWidth': '150px',
+                'overflow': 'hidden',
+                'textOverflow': 'ellipsis',
+            },
+        ),
+        html.Br(),
         html.H5("Key Data Preparations"),
         html.P(
             ["We performed several key steps to prepare the data for modeling:",
@@ -282,14 +312,14 @@ analyze_tab = html.Div(
                         ),
                         dbc.Row([
                             dbc.Col(dcc.Graph(id="churn-pie-chart",
-                                              figure=go.Figure(
-                                                  data=[go.Pie(labels=['Retained', 'Exited'],
-                                                               values=[df_processed.Exited[df_processed['Exited'] == 0].count(),
-                                                                       df_processed.Exited[df_processed['Exited'] == 1].count()],
-                                                               marker=dict(colors=['#1f77b4', '#ff7f0e'], line=dict(color="white", width=1.3)),
-                                                               hoverinfo="label+percent", hole=0.5)],
-                                                  layout=go.Layout(title="Proportion of Customer Churn", height=400, margin=dict(t=50, b=50))
-                                              )), md=6),
+                                             figure=go.Figure(
+                                                 data=[go.Pie(labels=['Retained', 'Exited'],
+                                                              values=[df_processed.Exited[df_processed['Exited'] == 0].count(),
+                                                                      df_processed.Exited[df_processed['Exited'] == 1].count()],
+                                                              marker=dict(colors=['#1f77b4', '#ff7f0e'], line=dict(color="white", width=1.3)),
+                                                              hoverinfo="label+percent", hole=0.5)],
+                                                 layout=go.Layout(title="Proportion of Customer Churn", height=400, margin=dict(t=50, b=50))
+                                             )), md=6),
                             dbc.Col(dcc.Graph(id="correlation-matrix"), md=6),
                         ]),
                         html.P(
