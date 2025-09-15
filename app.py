@@ -161,6 +161,7 @@ metrics_df = pd.DataFrame(model_results).round(4)
 
 # --- Dashboard Layout ---
 app = Dash(__name__, external_stylesheets=[dbc.themes.FLATLY])
+app.title = "Bank Customer Churn Prediction"
 server = app.server
 
 header = dbc.Navbar(
